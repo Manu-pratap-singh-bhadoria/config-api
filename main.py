@@ -66,14 +66,19 @@ def load_yaml():
 def load_env():
     result = {}
 
-    for key, value in os.environ.items():
+    # Only the assignment-specific environment variables
+    mapping = {
+        "APP_PORT": "port",
+        "APP_LOG_LEVEL": "log_level",
+        "APP_API_KEY": "api_key",
+        "APP_DEBUG": "debug",
+        "APP_NUM_WORKERS": "workers",
+    }
 
-        if key.startswith("APP_"):
-            result[key[4:].lower()] = value
-
-    # APP_NUM_WORKERS -> workers
-    if "num_workers" in result:
-        result["workers"] = result.pop("num_workers")
+    for env_key, config_key in mapping.items():
+        value = os.getenv(env_key)
+        if value is not None:
+            result[config_key] = value
 
     return result
 
